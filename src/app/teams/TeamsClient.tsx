@@ -1,9 +1,19 @@
 'use client'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { useSearchParams } from 'next/navigation'
 import type { Team, Hackathon } from '@/types'
 
+type SortKey = 'newest' | 'oldest'
+
 export function TeamsClient({ teams, hackathons }: { teams: Team[]; hackathons: Hackathon[] }) {
+  const searchParams = useSearchParams()
   const [filter, setFilter] = useState<string>('all')
+  const [sort, setSort] = useState<SortKey>('newest')
+
+  useEffect(() => {
+    const hackathonParam = searchParams.get('hackathon')
+    if (hackathonParam) setFilter(hackathonParam)
+  }, [searchParams])
   const slugs = [...new Set(teams.map(t => t.hackathonSlug))]
 
   const chips = [
@@ -16,23 +26,34 @@ export function TeamsClient({ teams, hackathons }: { teams: Team[]; hackathons: 
     }),
   ]
 
-  const filtered = filter === 'all' ? teams
+  const filtered = (filter === 'all' ? teams
     : filter === 'open' ? teams.filter(t => t.isOpen)
     : teams.filter(t => t.hackathonSlug === filter)
+  ).slice().sort((a, b) => {
+    const diff = new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+    return sort === 'newest' ? -diff : diff
+  })
 
   return (
     <>
-      <div className="flex flex-wrap gap-2 mb-8">
-        {chips.map(({ key, label }) => (
-          <button key={key} onClick={() => setFilter(key)}
-            className={`text-sm font-medium px-4 py-1.5 rounded-full border transition-all ${
-              filter === key
-                ? 'bg-brand text-white border-brand'
-                : 'bg-white text-gray-500 border-gray-200 hover:border-brand hover:text-brand hover:bg-brand-light'
-            }`}>
-            {label}
-          </button>
-        ))}
+      <div className="flex flex-wrap items-center justify-between gap-3 mb-8">
+        <div className="flex flex-wrap gap-2">
+          {chips.map(({ key, label }) => (
+            <button key={key} onClick={() => setFilter(key)}
+              className={`text-sm font-medium px-4 py-1.5 rounded-full border transition-all ${
+                filter === key
+                  ? 'bg-brand text-white border-brand'
+                  : 'bg-white text-gray-500 border-gray-200 hover:border-brand hover:text-brand hover:bg-brand-light'
+              }`}>
+              {label}
+            </button>
+          ))}
+        </div>
+        <button
+          onClick={() => setSort(s => s === 'newest' ? 'oldest' : 'newest')}
+          className="text-xs font-medium text-gray-500 border border-gray-200 px-3 py-1.5 rounded-lg hover:bg-gray-50 transition-colors whitespace-nowrap">
+          {sort === 'newest' ? '최신순 ↓' : '오래된순 ↑'}
+        </button>
       </div>
 
       {filtered.length === 0 ? (

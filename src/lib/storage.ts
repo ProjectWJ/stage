@@ -1,4 +1,4 @@
-import type { SubmissionData } from '@/types'
+import type { SubmissionData, Submission } from '@/types'
 
 const KEY = (teamCode: string) => `submission:${teamCode}`
 
@@ -30,4 +30,21 @@ export const getAISummary = (teamCode: string): string | null =>
 export const isLocalStorageAvailable = (): boolean => {
   try { localStorage.setItem('__test__', '1'); localStorage.removeItem('__test__'); return true }
   catch { return false }
+}
+
+// ── 쇼케이스 제출물 (P1) ──
+const SUBMISSIONS_KEY = 'stage_submissions'
+
+export const getAllSubmissions = (): Submission[] => {
+  try {
+    const raw = localStorage.getItem(SUBMISSIONS_KEY)
+    return raw ? JSON.parse(raw) : []
+  } catch { return [] }
+}
+
+export const addSubmission = (s: Submission): void => {
+  try {
+    const all = getAllSubmissions()
+    localStorage.setItem(SUBMISSIONS_KEY, JSON.stringify([...all, s]))
+  } catch {}
 }

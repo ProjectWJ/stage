@@ -1,3 +1,4 @@
+import { Suspense } from 'react'
 import type { Metadata } from 'next'
 import { getTeams, getHackathons } from '@/lib'
 import { TeamsClient } from '../teams/TeamsClient'
@@ -11,7 +12,9 @@ export default function CampPage() {
         <h1 className="text-3xl font-extrabold tracking-tight mb-2">캠프</h1>
         <p className="text-gray-500">함께할 팀을 찾거나, 팀원을 모집하세요.</p>
       </div>
-      <TeamsClient teams={getTeams()} hackathons={getHackathons()} />
+      <Suspense>
+        <TeamsClient teams={getTeams()} hackathons={getHackathons()} />
+      </Suspense>
     </div>
   )
 }

@@ -1,8 +1,8 @@
 'use client'
-import { useState } from 'react'
+import { useSearchParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
 import type { Hackathon, HackathonSections, LeaderboardData, Team } from '@/types'
-import { formatDate, getMilestoneStatus, formatKRW } from '@/lib'
+import { formatDate, getMilestoneStatus, formatKRW, getTzAbbr } from '@/lib'
 import { EmptyState } from '@/components/EmptyState'
 
 type TabKey = 'overview' | 'teams' | 'eval' | 'prize' | 'info' | 'schedule' | 'submit' | 'leaderboard'
@@ -41,8 +41,17 @@ function InfoCard({ title, children }: { title: string; children: React.ReactNod
 }
 
 export function DetailTabs({ hackathon, sections, leaderboard, teams }: Props) {
-  const [active, setActive] = useState<TabKey>('overview')
+  const searchParams = useSearchParams()
+  const router = useRouter()
+  const tabParam = searchParams.get('tab') as TabKey | null
+  const active: TabKey = tabParam && TAB_LABELS.some(t => t.key === tabParam) ? tabParam : 'overview'
   const top = leaderboard?.entries[0]
+
+  function setActive(key: TabKey) {
+    const p = new URLSearchParams(searchParams.toString())
+    p.set('tab', key)
+    router.replace(`?${p.toString()}`, { scroll: false })
+  }
 
   return (
     <div>
@@ -104,9 +113,10 @@ export function DetailTabs({ hackathon, sections, leaderboard, teams }: Props) {
           {/* 팀(캠프) */}
           {active === 'teams' && (
             <div className="flex flex-col gap-4">
-              {teams.length === 0 ? (
-                <EmptyState icon="👥" message="이 대회에 등록된 팀이 없습니다.">
-                </EmptyState>
+              {sections?.teams && !sections.teams.campEnabled ? (
+                <EmptyState icon="👥" message="이 대회는 팀 모집을 지원하지 않습니다." />
+              ) : teams.length === 0 ? (
+                <EmptyState icon="👥" message="이 대회에 등록된 팀이 없습니다." />
               ) : (
                 teams.map(t => (
                   <div key={t.teamCode} className={`bg-white border border-gray-200 rounded-xl p-5 shadow-sm flex items-center justify-between ${!t.isOpen ? 'opacity-60' : ''}`}>
@@ -130,7 +140,7 @@ export function DetailTabs({ hackathon, sections, leaderboard, teams }: Props) {
                 ))
               )}
               <div className="mt-2">
-                <Link href="/camp" className="text-sm font-semibold text-brand hover:underline">
+                <Link href={sections?.teams?.listUrl ?? '/camp'} className="text-sm font-semibold text-brand hover:underline">
                   캠프 전체 보기 →
                 </Link>
               </div>
@@ -141,8 +151,15 @@ export function DetailTabs({ hackathon, sections, leaderboard, teams }: Props) {
           {active === 'eval' && (
             sections?.eval ? (
               <InfoCard title="📊 평가 방식">
-                <div className="inline-flex items-center bg-brand-light text-brand border border-brand/20 text-sm font-bold px-3 py-2 rounded-lg mb-3">
-                  📌 {sections.eval.metricName}
+                <div className="flex flex-wrap items-center gap-2 mb-3">
+                  <div className="inline-flex items-center bg-brand-light text-brand border border-brand/20 text-sm font-bold px-3 py-2 rounded-lg">
+                    📌 {sections.eval.metricName}
+                  </div>
+                  {sections.eval.scoreSource === 'vote' && (
+                    <span className="text-xs font-semibold text-purple-600 bg-purple-50 border border-purple-200 px-2.5 py-1.5 rounded-lg">
+                      🗳️ 투표 기반
+                    </span>
+                  )}
                 </div>
                 <p className="text-sm text-gray-600 leading-relaxed">{sections.eval.description}</p>
                 {sections.eval.scoreDisplay?.breakdown && (
@@ -231,7 +248,7 @@ export function DetailTabs({ hackathon, sections, leaderboard, teams }: Props) {
           {/* 일정 */}
           {active === 'schedule' && (
             sections?.schedule ? (
-              <InfoCard title="📅 진행 일정">
+              <InfoCard title={`📅 진행 일정 (${getTzAbbr(sections.schedule.timezone)})`}>
                 <div className="space-y-0">
                   {sections.schedule.milestones.map(m => {
                     const st = getMilestoneStatus(m.at)
@@ -263,6 +280,13 @@ export function DetailTabs({ hackathon, sections, leaderboard, teams }: Props) {
             sections?.submit ? (
               <div className="flex flex-col gap-5">
                 <InfoCard title="📤 제출 안내">
+                  <div className="flex flex-wrap gap-1.5 mb-4">
+                    {sections.submit.allowedArtifactTypes.map(t => (
+                      <span key={t} className="text-xs font-mono font-semibold text-gray-500 bg-gray-100 border border-gray-200 px-2 py-0.5 rounded-md">
+                        {t}
+                      </span>
+                    ))}
+                  </div>
                   {sections.submit.submissionItems && (
                     <div className="space-y-2.5 mb-4">
                       {sections.submit.submissionItems.map((item, i) => (
@@ -284,12 +308,20 @@ export function DetailTabs({ hackathon, sections, leaderboard, teams }: Props) {
                     ))}
                   </ul>
                 </InfoCard>
-                {hackathon.status === 'ongoing' && (
-                  <Link href={`/submit/${hackathon.slug}`}
-                    className="flex items-center justify-center bg-brand text-white font-semibold text-sm px-5 py-3 rounded-xl hover:bg-brand-dark transition-colors no-underline">
-                    제출하기 →
-                  </Link>
-                )}
+                <div className="flex flex-col gap-2">
+                  {hackathon.status === 'ongoing' && (
+                    <Link href={`/submit/${hackathon.slug}`}
+                      className="flex items-center justify-center bg-brand text-white font-semibold text-sm px-5 py-3 rounded-xl hover:bg-brand-dark transition-colors no-underline">
+                      제출하기 →
+                    </Link>
+                  )}
+                  {sections.submit.submissionUrl && (
+                    <a href={sections.submit.submissionUrl} target="_blank" rel="noopener noreferrer"
+                      className="flex items-center justify-center text-sm font-semibold text-gray-600 border border-gray-200 py-3 rounded-xl hover:bg-gray-50 transition-colors no-underline">
+                      공식 제출 페이지 →
+                    </a>
+                  )}
+                </div>
               </div>
             ) : (
               <EmptyState icon="📤" message="제출 정보가 없습니다." />
@@ -303,7 +335,12 @@ export function DetailTabs({ hackathon, sections, leaderboard, teams }: Props) {
               const hasArtifacts = leaderboard.entries.some(e => e.artifacts)
               return (
                 <div>
-                  <p className="text-xs text-gray-400 font-mono mb-4">최종 업데이트: {formatDate(leaderboard.updatedAt)}</p>
+                  <div className="flex flex-wrap items-start justify-between gap-2 mb-4">
+                    <p className="text-xs text-gray-400 font-mono">최종 업데이트: {formatDate(leaderboard.updatedAt)}</p>
+                    {sections?.leaderboard?.note && (
+                      <p className="text-xs text-gray-400 italic">{sections.leaderboard.note}</p>
+                    )}
+                  </div>
                   <div className="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm">
                     <table className="w-full border-collapse">
                       <thead>
@@ -355,7 +392,7 @@ export function DetailTabs({ hackathon, sections, leaderboard, teams }: Props) {
                                   {e.artifacts?.pdfUrl && (
                                     <a href={e.artifacts.pdfUrl} target="_blank" rel="noopener noreferrer"
                                       className="text-xs font-semibold text-brand bg-brand-light border border-brand/20 px-2 py-1 rounded-md hover:bg-brand hover:text-white transition-colors no-underline">
-                                      📄 PDF
+                                      📄 {e.artifacts.planTitle ?? 'PDF'}
                                     </a>
                                   )}
                                 </div>
@@ -366,6 +403,12 @@ export function DetailTabs({ hackathon, sections, leaderboard, teams }: Props) {
                       </tbody>
                     </table>
                   </div>
+                  {sections?.leaderboard?.publicLeaderboardUrl && (
+                    <a href={sections.leaderboard.publicLeaderboardUrl} target="_blank" rel="noopener noreferrer"
+                      className="mt-4 flex items-center justify-center text-sm font-semibold text-gray-600 border border-gray-200 py-2.5 rounded-xl hover:bg-gray-50 transition-colors no-underline">
+                      공식 리더보드 보기 →
+                    </a>
+                  )}
                 </div>
               )
             })() : (
@@ -407,15 +450,12 @@ export function DetailTabs({ hackathon, sections, leaderboard, teams }: Props) {
                     {top.artifacts.pdfUrl && (
                       <a href={top.artifacts.pdfUrl} target="_blank" rel="noopener noreferrer"
                         className="text-xs font-semibold text-brand bg-white border border-brand/20 px-2.5 py-1 rounded-md hover:bg-brand hover:text-white transition-colors no-underline">
-                        📄 PDF
+                        📄 {top.artifacts.planTitle ?? 'PDF'}
                       </a>
                     )}
                   </div>
                 )}
               </div>
-              <Link href="/leaderboard" className="flex items-center justify-center w-full text-sm font-semibold text-gray-500 border border-gray-200 py-2.5 rounded-lg hover:bg-gray-50 transition-colors no-underline">
-                전체 리더보드 보기
-              </Link>
             </InfoCard>
           )}
 

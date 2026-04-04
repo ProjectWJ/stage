@@ -1,6 +1,6 @@
 'use client'
 import { useState } from 'react'
-import type { LeaderboardData, Hackathon } from '@/types'
+import type { LeaderboardData, Hackathon, HackathonSections } from '@/types'
 import { formatDate } from '@/lib'
 
 const RANK_STYLES: Record<number, string> = {
@@ -9,11 +9,18 @@ const RANK_STYLES: Record<number, string> = {
   3: 'bg-orange-100 text-orange-800',
 }
 
-export function LeaderboardTabs({ leaderboards, hackathons }: { leaderboards: LeaderboardData[]; hackathons: Hackathon[] }) {
+export function LeaderboardTabs({
+  leaderboards, hackathons, lbSections,
+}: {
+  leaderboards: LeaderboardData[]
+  hackathons: Hackathon[]
+  lbSections: Record<string, HackathonSections['leaderboard'] | null>
+}) {
   const [activeSlug, setActiveSlug] = useState(leaderboards[0]?.hackathonSlug)
   const active = leaderboards.find(l => l.hackathonSlug === activeSlug)
   if (!active) return null
 
+  const activeSections = lbSections[activeSlug] ?? null
   const hasBreakdown = active.entries.some(e => e.scoreBreakdown)
   const hasArtifacts = active.entries.some(e => e.artifacts)
 
@@ -35,7 +42,12 @@ export function LeaderboardTabs({ leaderboards, hackathons }: { leaderboards: Le
         })}
       </div>
 
-      <p className="text-xs text-gray-400 font-mono mb-4">최종 업데이트: {formatDate(active.updatedAt)}</p>
+      <div className="flex flex-wrap items-start justify-between gap-2 mb-4">
+        <p className="text-xs text-gray-400 font-mono">최종 업데이트: {formatDate(active.updatedAt)}</p>
+        {activeSections?.note && (
+          <p className="text-xs text-gray-400 italic">{activeSections.note}</p>
+        )}
+      </div>
 
       {active.entries.length === 0 ? (
         <div className="text-center py-16 text-gray-400">
@@ -94,7 +106,7 @@ export function LeaderboardTabs({ leaderboards, hackathons }: { leaderboards: Le
                         {e.artifacts?.pdfUrl && (
                           <a href={e.artifacts.pdfUrl} target="_blank" rel="noopener noreferrer"
                             className="text-xs font-semibold text-brand bg-brand-light border border-brand/20 px-2 py-1 rounded-md hover:bg-brand hover:text-white transition-colors no-underline">
-                            📄 PDF
+                            📄 {e.artifacts.planTitle ?? 'PDF'}
                           </a>
                         )}
                       </div>
@@ -105,6 +117,12 @@ export function LeaderboardTabs({ leaderboards, hackathons }: { leaderboards: Le
             </tbody>
           </table>
         </div>
+      )}
+      {activeSections?.publicLeaderboardUrl && (
+        <a href={activeSections.publicLeaderboardUrl} target="_blank" rel="noopener noreferrer"
+          className="mt-4 flex items-center justify-center text-sm font-semibold text-gray-600 border border-gray-200 py-2.5 rounded-xl hover:bg-gray-50 transition-colors no-underline">
+          공식 리더보드 보기 →
+        </a>
       )}
     </>
   )

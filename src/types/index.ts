@@ -83,7 +83,7 @@ export interface Team {
   createdAt: string
 }
 
-// localStorage 저장 구조
+// localStorage 저장 구조 (기존)
 export interface SubmissionData {
   slug: string
   teamName: string
@@ -91,4 +91,17 @@ export interface SubmissionData {
   regenerateUsed: boolean
   submittedAt: string
   artifacts: { planUrl: string; webUrl: string; pdfUrl: string }
+}
+
+// 쇼케이스 제출물 (P1 신규)
+export interface Submission {
+  id: string
+  hackathonSlug: string
+  nickname: string
+  teamName: string
+  githubUrl: string
+  demoUrl?: string
+  description: string
+  submittedAt: string
+  aiSummary: string
 }

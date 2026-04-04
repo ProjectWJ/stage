@@ -1,4 +1,5 @@
 import { notFound } from 'next/navigation'
+import { Suspense } from 'react'
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import {
@@ -70,12 +71,14 @@ export default async function HackathonDetailPage({ params }: Props) {
       </div>
 
       {/* 8-tab layout */}
-      <DetailTabs
-        hackathon={hackathon}
-        sections={sections}
-        leaderboard={leaderboard}
-        teams={teams}
-      />
+      <Suspense>
+        <DetailTabs
+          hackathon={hackathon}
+          sections={sections}
+          leaderboard={leaderboard}
+          teams={teams}
+        />
+      </Suspense>
     </div>
   )
 }
