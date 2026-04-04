@@ -1,19 +1,22 @@
 'use client'
-import { useState, useEffect } from 'react'
-import { useSearchParams } from 'next/navigation'
+import { useState } from 'react'
+import { useSearchParams, useRouter } from 'next/navigation'
 import type { Team, Hackathon } from '@/types'
 
 type SortKey = 'newest' | 'oldest'
 
 export function TeamsClient({ teams, hackathons }: { teams: Team[]; hackathons: Hackathon[] }) {
   const searchParams = useSearchParams()
-  const [filter, setFilter] = useState<string>('all')
+  const router = useRouter()
+  const filter = searchParams.get('hackathon') ?? 'all'
   const [sort, setSort] = useState<SortKey>('newest')
 
-  useEffect(() => {
-    const hackathonParam = searchParams.get('hackathon')
-    if (hackathonParam) setFilter(hackathonParam)
-  }, [searchParams])
+  function setFilter(key: string) {
+    const p = new URLSearchParams(searchParams.toString())
+    p.set('hackathon', key)
+    router.replace(`?${p.toString()}`, { scroll: false })
+  }
+
   const slugs = [...new Set(teams.map(t => t.hackathonSlug))]
 
   const chips = [

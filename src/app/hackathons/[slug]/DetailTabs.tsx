@@ -308,18 +308,16 @@ export function DetailTabs({ hackathon, sections, leaderboard, teams }: Props) {
                     ))}
                   </ul>
                 </InfoCard>
-                <div className="flex flex-col gap-2">
-                  {hackathon.status === 'ongoing' && (
+                <div className="flex justify-start">
+                  {hackathon.status === 'ongoing' ? (
                     <Link href={`/submit/${hackathon.slug}`}
-                      className="flex items-center justify-center bg-brand text-white font-semibold text-sm px-5 py-3 rounded-xl hover:bg-brand-dark transition-colors no-underline">
+                      className="inline-flex items-center bg-brand text-white font-semibold text-sm px-4 py-2 rounded-lg hover:bg-brand-dark transition-colors no-underline">
                       제출하기 →
                     </Link>
-                  )}
-                  {sections.submit.submissionUrl && (
-                    <a href={sections.submit.submissionUrl} target="_blank" rel="noopener noreferrer"
-                      className="flex items-center justify-center text-sm font-semibold text-gray-600 border border-gray-200 py-3 rounded-xl hover:bg-gray-50 transition-colors no-underline">
-                      공식 제출 페이지 →
-                    </a>
+                  ) : (
+                    <span className="inline-flex items-center text-sm font-semibold text-gray-300 bg-gray-100 border border-gray-200 px-4 py-2 rounded-lg cursor-not-allowed">
+                      제출하기 →
+                    </span>
                   )}
                 </div>
               </div>
@@ -403,12 +401,6 @@ export function DetailTabs({ hackathon, sections, leaderboard, teams }: Props) {
                       </tbody>
                     </table>
                   </div>
-                  {sections?.leaderboard?.publicLeaderboardUrl && (
-                    <a href={sections.leaderboard.publicLeaderboardUrl} target="_blank" rel="noopener noreferrer"
-                      className="mt-4 flex items-center justify-center text-sm font-semibold text-gray-600 border border-gray-200 py-2.5 rounded-xl hover:bg-gray-50 transition-colors no-underline">
-                      공식 리더보드 보기 →
-                    </a>
-                  )}
                 </div>
               )
             })() : (

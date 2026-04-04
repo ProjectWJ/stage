@@ -28,10 +28,13 @@ export function SubmitClient({ hackathonSlug }: Props) {
   const [error, setError] = useState('')
 
   useEffect(() => {
-    const u = getUser()
-    setUserState(u)
-    if (!u) setNickInput(generateNickname())
-    setMounted(true)
+    try {
+      const u = getUser()
+      setUserState(u)
+      if (!u) setNickInput(generateNickname())
+    } finally {
+      setMounted(true)
+    }
   }, [])
 
   if (!mounted) return null

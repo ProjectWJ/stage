@@ -13,6 +13,54 @@
       "teamName": "Team Gamma",
       "score": 0.7013,
       "submittedAt": "2026-02-25T09:40:00+09:00"
+    },
+    {
+      "rank": 3,
+      "teamName": "NeuralCraft",
+      "score": 0.6887,
+      "submittedAt": "2026-02-25T11:15:00+09:00"
+    },
+    {
+      "rank": 4,
+      "teamName": "BitSlicers",
+      "score": 0.6754,
+      "submittedAt": "2026-02-24T18:33:00+09:00"
+    },
+    {
+      "rank": 5,
+      "teamName": "QuantumLeap",
+      "score": 0.6601,
+      "submittedAt": "2026-02-25T14:52:00+09:00"
+    },
+    {
+      "rank": 6,
+      "teamName": "ZeroShot",
+      "score": 0.6478,
+      "submittedAt": "2026-02-23T22:10:00+09:00"
+    },
+    {
+      "rank": 7,
+      "teamName": "DataDrifters",
+      "score": 0.6312,
+      "submittedAt": "2026-02-25T08:27:00+09:00"
+    },
+    {
+      "rank": 8,
+      "teamName": "LossZero",
+      "score": 0.6189,
+      "submittedAt": "2026-02-24T16:44:00+09:00"
+    },
+    {
+      "rank": 9,
+      "teamName": "GreeneryLabs",
+      "score": 0.6043,
+      "submittedAt": "2026-02-25T17:03:00+09:00"
+    },
+    {
+      "rank": 10,
+      "teamName": "Overfit Club",
+      "score": 0.5921,
+      "submittedAt": "2026-02-24T23:59:00+09:00"
     }
   ],
   "extraLeaderboards": [
