@@ -14,14 +14,16 @@ interface Props {
 }
 
 export function ShowcaseCard({ submission, hackathonTitle, rank }: Props) {
-  const { teamName, nickname, description, githubUrl, demoUrl, aiSummary, submittedAt } = submission
+  const { id, teamName, nickname, description, githubUrl, demoUrl, aiSummary, submittedAt } = submission
 
   const date = new Date(submittedAt)
   const dateStr = `${date.getMonth() + 1}월 ${date.getDate()}일`
   const badge = rank ? RANK_BADGE[rank] : null
 
   return (
-    <div className={`bg-white border rounded-2xl p-6 shadow-sm hover:shadow-md transition-shadow flex flex-col ${badge ? 'border-yellow-300' : 'border-gray-200'}`}>
+    <div
+      onClick={() => window.open(`/showcase/${id}`, '_blank')}
+      className={`bg-white border rounded-2xl p-6 shadow-sm hover:shadow-md transition-shadow flex flex-col cursor-pointer ${badge ? 'border-yellow-300' : 'border-gray-200'}`}>
       {/* 헤더 */}
       <div className="flex flex-col gap-1 mb-3">
         <div className="flex items-start justify-between gap-2">
@@ -52,6 +54,7 @@ export function ShowcaseCard({ submission, hackathonTitle, rank }: Props) {
           href={githubUrl}
           target="_blank"
           rel="noopener noreferrer"
+          onClick={e => e.stopPropagation()}
           className="text-xs font-semibold text-gray-600 border border-gray-200 px-3 py-1.5 rounded-lg hover:bg-gray-50 transition-colors no-underline">
           GitHub →
         </a>
@@ -60,6 +63,7 @@ export function ShowcaseCard({ submission, hackathonTitle, rank }: Props) {
             href={demoUrl}
             target="_blank"
             rel="noopener noreferrer"
+            onClick={e => e.stopPropagation()}
             className="text-xs font-semibold text-brand border border-brand/20 bg-brand-light px-3 py-1.5 rounded-lg hover:bg-brand/10 transition-colors no-underline">
             데모 보기 →
           </a>

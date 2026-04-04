@@ -1,14 +1,14 @@
 'use client'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
-// slug를 시드로 그라디언트 선택 — 결정론적
+// slug를 시드로 그라디언트 선택 — 결정론적, inline style 사용 (Tailwind 동적 클래스 스캔 누락 방지)
 const GRADIENTS = [
-  'from-indigo-400 via-purple-400 to-pink-400',
-  'from-blue-400 via-cyan-400 to-teal-400',
-  'from-violet-500 via-indigo-400 to-blue-400',
-  'from-orange-400 via-amber-400 to-yellow-300',
-  'from-emerald-400 via-teal-400 to-cyan-400',
-  'from-rose-400 via-pink-400 to-fuchsia-400',
+  'linear-gradient(135deg, #818cf8, #ec4899)',
+  'linear-gradient(135deg, #60a5fa, #2dd4bf)',
+  'linear-gradient(135deg, #a78bfa, #60a5fa)',
+  'linear-gradient(135deg, #fb923c, #fbbf24)',
+  'linear-gradient(135deg, #34d399, #22d3ee)',
+  'linear-gradient(135deg, #fb7185, #e879f9)',
 ]
 
 function pickGradient(slug: string) {
@@ -23,13 +23,15 @@ interface Props {
 }
 
 export function ThumbnailImage({ src, alt, slug }: Props) {
+  const [mounted, setMounted] = useState(false)
   const [failed, setFailed] = useState(false)
-  const gradient = pickGradient(slug)
+  const gradientStyle = { background: pickGradient(slug) }
 
-  if (failed) {
-    return (
-      <div className={`w-full aspect-video bg-gradient-to-br ${gradient} rounded-t-xl`} />
-    )
+  useEffect(() => { setMounted(true) }, [])
+
+  // SSR 및 hydration: 항상 gradient div → img가 HTML에 박히지 않음
+  if (!mounted || failed) {
+    return <div className="w-full aspect-video rounded-t-xl" style={gradientStyle} />
   }
 
   return (

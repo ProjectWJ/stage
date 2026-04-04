@@ -51,7 +51,7 @@ export default async function RecapPage({ params }: Props) {
               <h2 className="text-xl font-extrabold tracking-tight">전체 순위</h2>
               <p className="text-xs text-gray-400 font-mono mt-0.5">최종 업데이트: {formatDate(leaderboard.updatedAt)}</p>
             </div>
-            <Link href={`/showcase?tab=${slug}`}
+            <Link href={`/showcase?scroll=${slug}`}
               className="text-sm font-semibold text-brand border border-brand/30 px-4 py-2 rounded-lg hover:bg-brand-light transition-colors no-underline whitespace-nowrap">
               쇼케이스 보기 →
             </Link>

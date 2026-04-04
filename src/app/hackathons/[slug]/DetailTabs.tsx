@@ -1,13 +1,16 @@
 'use client'
+import { useState, useEffect } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
-import type { Hackathon, HackathonSections, LeaderboardData, Team } from '@/types'
+import type { Hackathon, HackathonSections, LeaderboardData, Team, Submission } from '@/types'
 import { formatDate, getMilestoneStatus, formatKRW, getTzAbbr } from '@/lib'
 import { EmptyState } from '@/components/EmptyState'
+import { ShowcaseCard } from '@/components/ShowcaseCard'
+import { getAllSubmissions } from '@/lib/storage'
 
-type TabKey = 'overview' | 'teams' | 'eval' | 'prize' | 'info' | 'schedule' | 'submit' | 'leaderboard'
+type TabKey = 'overview' | 'teams' | 'eval' | 'prize' | 'info' | 'schedule' | 'submit' | 'leaderboard' | 'showcase'
 
-const TAB_LABELS: { key: TabKey; label: string }[] = [
+const BASE_TABS: { key: TabKey; label: string }[] = [
   { key: 'overview', label: '개요' },
   { key: 'teams', label: '팀(캠프)' },
   { key: 'eval', label: '평가' },
@@ -43,9 +46,25 @@ function InfoCard({ title, children }: { title: string; children: React.ReactNod
 export function DetailTabs({ hackathon, sections, leaderboard, teams }: Props) {
   const searchParams = useSearchParams()
   const router = useRouter()
+  const [submissions, setSubmissions] = useState<Submission[]>([])
+  const [submissionsLoaded, setSubmissionsLoaded] = useState(false)
+
+  const tabList = hackathon.status === 'ended'
+    ? [...BASE_TABS, { key: 'showcase' as TabKey, label: '쇼케이스' }]
+    : BASE_TABS
+
   const tabParam = searchParams.get('tab') as TabKey | null
-  const active: TabKey = tabParam && TAB_LABELS.some(t => t.key === tabParam) ? tabParam : 'overview'
+  const active: TabKey = tabParam && tabList.some(t => t.key === tabParam) ? tabParam : 'overview'
   const top = leaderboard?.entries[0]
+
+  useEffect(() => {
+    if (hackathon.status !== 'ended') return
+    try {
+      setSubmissions(getAllSubmissions().filter(s => s.hackathonSlug === hackathon.slug))
+    } finally {
+      setSubmissionsLoaded(true)
+    }
+  }, [hackathon.slug, hackathon.status])
 
   function setActive(key: TabKey) {
     const p = new URLSearchParams(searchParams.toString())
@@ -53,11 +72,16 @@ export function DetailTabs({ hackathon, sections, leaderboard, teams }: Props) {
     router.replace(`?${p.toString()}`, { scroll: false })
   }
 
+  const rankMap: Record<string, 1 | 2 | 3> = {}
+  leaderboard?.entries.forEach(e => {
+    if (e.rank <= 3) rankMap[`${hackathon.slug}::${e.teamName}`] = e.rank as 1 | 2 | 3
+  })
+
   return (
     <div>
       {/* Tab bar */}
-      <div className="flex border-b-2 border-gray-200 mb-7 overflow-x-auto">
-        {TAB_LABELS.map(({ key, label }) => (
+      <div className="flex border-b-2 border-gray-200 mb-7 overflow-x-auto overflow-y-hidden">
+        {tabList.map(({ key, label }) => (
           <button key={key} onClick={() => setActive(key)}
             className={`px-4 py-3 text-sm font-medium border-b-2 -mb-0.5 whitespace-nowrap transition-all ${
               active === key
@@ -405,6 +429,36 @@ export function DetailTabs({ hackathon, sections, leaderboard, teams }: Props) {
               )
             })() : (
               <EmptyState icon="📋" message="등록된 순위가 없습니다." />
+            )
+          )}
+
+          {/* 쇼케이스 */}
+          {active === 'showcase' && (
+            !submissionsLoaded ? (
+              <div className="animate-pulse grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                {Array(3).fill(0).map((_, i) => (
+                  <div key={i} className="bg-white border border-gray-100 rounded-2xl overflow-hidden">
+                    <div className="w-full aspect-video bg-gray-200" />
+                    <div className="p-4 space-y-2">
+                      <div className="h-4 bg-gray-200 rounded w-3/4" />
+                      <div className="h-3 bg-gray-100 rounded w-full" />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : submissions.length === 0 ? (
+              <EmptyState icon="🎨" message="아직 제출된 솔루션이 없습니다." />
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                {submissions.map(s => (
+                  <ShowcaseCard
+                    key={s.id}
+                    submission={s}
+                    hackathonTitle={hackathon.title}
+                    rank={rankMap[`${hackathon.slug}::${s.teamName}`]}
+                  />
+                ))}
+              </div>
             )
           )}
         </div>

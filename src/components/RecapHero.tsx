@@ -46,7 +46,7 @@ export function RecapHero({ hackathon, entries, sections }: Props) {
       </div>
 
       {/* 포디움 */}
-      <div className="flex items-end justify-center gap-4 mb-8">
+      <div className="flex flex-col sm:flex-row sm:items-end sm:justify-center gap-3 mb-8">
         {PODIUM.map(({ rank, label, size, color, border, badge }) => {
           const entry = byRank[rank]
           if (!entry) return null
@@ -54,7 +54,7 @@ export function RecapHero({ hackathon, entries, sections }: Props) {
           return (
             <div key={rank}
               className={`bg-gradient-to-br ${color} border ${border} rounded-2xl shadow-sm flex flex-col items-center text-center
-                ${isLarge ? 'px-8 py-7 flex-1 max-w-xs' : 'px-5 py-5 w-44'}`}>
+                px-5 py-5 ${isLarge ? 'sm:px-8 sm:py-7 sm:flex-1 sm:max-w-xs order-first sm:order-none' : 'sm:w-44'}`}>
               <span className={`text-xs font-bold px-2.5 py-1 rounded-full border ${badge} mb-3`}>{label}</span>
               <p className={`font-extrabold leading-tight mb-1 ${isLarge ? 'text-xl' : 'text-base'}`}>{entry.teamName}</p>
               <p className={`font-mono text-brand ${isLarge ? 'text-3xl font-black' : 'text-xl font-bold'}`}>{entry.score}</p>
@@ -81,6 +81,45 @@ export function RecapHero({ hackathon, entries, sections }: Props) {
           </div>
         </div>
       )}
+
+      {/* 점수 분포 차트 */}
+      {entries.some(e => e.scoreBreakdown) && (() => {
+        const withBreakdown = entries.filter(e => e.scoreBreakdown).slice(0, 8)
+        const maxP = Math.max(...withBreakdown.map(e => e.scoreBreakdown!.participant))
+        const maxJ = Math.max(...withBreakdown.map(e => e.scoreBreakdown!.judge))
+        const cap = Math.max(maxP, maxJ)
+        return (
+          <div className="mt-6 bg-white border border-gray-200 rounded-xl shadow-sm p-5 max-w-lg mx-auto">
+            <p className="text-sm font-bold mb-4 text-center">📊 참가자 / 심사위원 점수 분포</p>
+            <div className="space-y-3">
+              {withBreakdown.map(e => (
+                <div key={e.rank}>
+                  <div className="flex justify-between text-xs text-gray-500 mb-1">
+                    <span className="font-medium truncate max-w-[8rem]">{e.teamName}</span>
+                    <span className="font-mono text-brand">{e.score}</span>
+                  </div>
+                  <div className="flex gap-1 h-2">
+                    <div className="flex-1 bg-gray-100 rounded-full overflow-hidden">
+                      <div className="h-full bg-blue-400 rounded-full" style={{ width: `${(e.scoreBreakdown!.participant / cap) * 100}%` }} />
+                    </div>
+                    <div className="flex-1 bg-gray-100 rounded-full overflow-hidden">
+                      <div className="h-full bg-brand rounded-full" style={{ width: `${(e.scoreBreakdown!.judge / cap) * 100}%` }} />
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+            <div className="flex gap-4 mt-3 justify-center">
+              <span className="flex items-center gap-1.5 text-xs text-gray-500">
+                <span className="w-3 h-2 rounded-full bg-blue-400 inline-block" /> 참가자
+              </span>
+              <span className="flex items-center gap-1.5 text-xs text-gray-500">
+                <span className="w-3 h-2 rounded-full bg-brand inline-block" /> 심사위원
+              </span>
+            </div>
+          </div>
+        )
+      })()}
     </div>
   )
 }

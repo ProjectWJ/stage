@@ -1,6 +1,6 @@
 import { Suspense } from 'react'
 import type { Metadata } from 'next'
-import { getHackathons, getAllLeaderboards } from '@/lib'
+import { getHackathons, getAllLeaderboards, getHackathonDetail } from '@/lib'
 import { ShowcaseClient } from './ShowcaseClient'
 
 export const metadata: Metadata = { title: '쇼케이스' }
@@ -18,6 +18,13 @@ export default function ShowcasePage() {
     }
   }
 
+  // slug → overview.summary 맵
+  const overviewMap: Record<string, string> = {}
+  for (const h of hackathons) {
+    const detail = getHackathonDetail(h.slug)
+    if (detail?.overview?.summary) overviewMap[h.slug] = detail.overview.summary
+  }
+
   return (
     <div className="max-w-5xl mx-auto px-6 py-12">
       <div className="mb-8">
@@ -25,7 +32,7 @@ export default function ShowcasePage() {
         <p className="text-gray-500">해커톤 참가팀의 결과물을 한눈에 확인하세요.</p>
       </div>
       <Suspense>
-        <ShowcaseClient allHackathons={hackathons} rankMap={rankMap} />
+        <ShowcaseClient allHackathons={hackathons} rankMap={rankMap} overviewMap={overviewMap} />
       </Suspense>
     </div>
   )

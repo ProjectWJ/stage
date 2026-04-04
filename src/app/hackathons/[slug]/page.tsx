@@ -54,20 +54,14 @@ export default async function HackathonDetailPage({ params }: Props) {
         {sections?.overview?.summary && (
           <p className="text-gray-600 text-base leading-relaxed max-w-2xl">{sections.overview.summary}</p>
         )}
-        <div className="flex gap-3 mt-6">
-          {hackathon.status === 'ongoing' && (
-            <Link href={`/submit/${hackathon.slug}`}
-              className="bg-brand text-white font-semibold text-sm px-5 py-2.5 rounded-lg hover:bg-brand-dark transition-colors no-underline">
-              제출하기 →
-            </Link>
-          )}
-          {hackathon.status === 'ended' && (
+        {hackathon.status === 'ended' && (
+          <div className="flex gap-3 mt-6">
             <Link href={`/hackathons/${hackathon.slug}/recap`}
               className="bg-white text-brand font-semibold text-sm px-5 py-2.5 rounded-lg border border-brand/30 hover:bg-brand-light transition-colors no-underline">
               결과 보기 →
             </Link>
-          )}
-        </div>
+          </div>
+        )}
       </div>
 
       {/* 8-tab layout */}

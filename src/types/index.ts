@@ -104,4 +104,9 @@ export interface Submission {
   description: string
   submittedAt: string
   aiSummary: string
+  // 상세 페이지용 optional 필드
+  techStack?: string[]
+  problemStatement?: string
+  features?: string[]
+  teamIntro?: string
 }

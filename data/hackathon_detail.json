@@ -77,6 +77,129 @@
   },
   "extraDetails": [
     {
+      "slug": "monthly-vibe-coding-2026-02",
+      "title": "월간 해커톤 : 바이브 코딩 개선 AI 아이디어 공모전 (2026.02)",
+      "sections": {
+        "overview": {
+          "summary": "바이브 코딩 환경을 개선하는 AI 아이디어를 제안하고 프로토타입으로 구현하는 월간 아이디어 해커톤입니다. 생성형 AI를 활용해 개발자의 창작 흐름을 돕는 새로운 도구·워크플로를 발굴합니다.",
+          "teamPolicy": {
+            "allowSolo": true,
+            "maxTeamSize": 4
+          }
+        },
+        "info": {
+          "notice": [
+            "아이디어 제안서(기획서)와 프로토타입 데모 영상 또는 배포 링크를 함께 제출해야 합니다.",
+            "외부 API 사용 시 심사자가 별도 키 없이 동작을 확인할 수 있어야 합니다.",
+            "기존 오픈소스 또는 공개 도구를 활용하되, 핵심 아이디어의 독창성이 평가 기준에 포함됩니다.",
+            "제출 마감 이후 결과물 수정은 평가에 반영되지 않습니다."
+          ],
+          "links": {
+            "rules": "https://example.com/public/rules/vibe202602",
+            "faq": "https://example.com/public/faq/vibe202602"
+          }
+        },
+        "eval": {
+          "metricName": "FinalScore",
+          "description": "아이디어 독창성(30%), 기술 구현 완성도(30%), 실용성·확장 가능성(20%), 발표 설득력(20%)을 심사위원 투표로 합산한 점수입니다.",
+          "scoreSource": "vote",
+          "scoreDisplay": {
+            "label": "투표 점수",
+            "breakdown": [
+              {
+                "key": "participant",
+                "label": "참가자",
+                "weightPercent": 30
+              },
+              {
+                "key": "judge",
+                "label": "심사위원",
+                "weightPercent": 70
+              }
+            ]
+          }
+        },
+        "schedule": {
+          "timezone": "Asia/Seoul",
+          "milestones": [
+            {
+              "name": "참가 신청 및 아이디어 기획서 제출 시작",
+              "at": "2026-02-10T10:00:00+09:00"
+            },
+            {
+              "name": "아이디어 기획서 제출 마감",
+              "at": "2026-02-24T23:59:00+09:00"
+            },
+            {
+              "name": "프로토타입·데모 최종 제출 마감",
+              "at": "2026-03-03T10:00:00+09:00"
+            },
+            {
+              "name": "참가자 투표 평가 시작",
+              "at": "2026-03-03T12:00:00+09:00"
+            },
+            {
+              "name": "투표 평가 마감",
+              "at": "2026-03-07T23:59:00+09:00"
+            },
+            {
+              "name": "대회 종료 및 결과 발표",
+              "at": "2026-03-09T10:00:00+09:00"
+            }
+          ]
+        },
+        "prize": {
+          "items": [
+            {
+              "place": "1st",
+              "amountKRW": 500000
+            },
+            {
+              "place": "2nd",
+              "amountKRW": 300000
+            },
+            {
+              "place": "3rd",
+              "amountKRW": 100000
+            }
+          ]
+        },
+        "teams": {
+          "campEnabled": true,
+          "listUrl": "/camp?hackathon=monthly-vibe-coding-2026-02"
+        },
+        "submit": {
+          "allowedArtifactTypes": [
+            "url",
+            "pdf",
+            "video"
+          ],
+          "submissionUrl": "/submit/monthly-vibe-coding-2026-02",
+          "guide": [
+            "기획서(PDF 또는 URL)와 프로토타입 데모(배포 링크 또는 영상 URL)를 함께 제출합니다.",
+            "배포 링크는 심사 기간 동안 외부에서 접속 가능해야 합니다.",
+            "팀원이 있는 경우 팀장이 대표로 제출하고, 팀원 닉네임 목록을 기획서에 포함하세요."
+          ],
+          "submissionItems": [
+            {
+              "key": "plan",
+              "title": "아이디어 기획서",
+              "format": "pdf_or_url"
+            },
+            {
+              "key": "demo",
+              "title": "프로토타입 데모",
+              "format": "url_or_video"
+            }
+          ]
+        },
+        "leaderboard": {
+          "publicLeaderboardUrl": "/hackathons/monthly-vibe-coding-2026-02#leaderboard",
+          "note": "점수는 참가자(30%)·심사위원(70%) 투표 결과를 가중 합산한 값입니다."
+        }
+      }
+    },
+    {
       "slug": "daker-handover-2026-03",
       "title": "긴급 인수인계 해커톤: 명세서만 보고 구현하라",
       "sections": {
