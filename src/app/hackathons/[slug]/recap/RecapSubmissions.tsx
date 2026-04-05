@@ -20,8 +20,11 @@ export function RecapSubmissions({ hackathonSlug, hackathonTitle }: { hackathonS
   if (!mounted || submissions.length === 0) return null
 
   return (
-    <section className="mt-12">
-      <h2 className="text-xl font-extrabold tracking-tight mb-6">제출물 쇼케이스</h2>
+    <section className="mt-12 pt-12 border-t border-gray-100">
+      <div className="flex items-center gap-3 mb-6">
+        <h2 className="text-xl font-extrabold tracking-tight">전체 출품작</h2>
+        <span className="text-sm font-medium text-gray-400 bg-gray-100 px-2.5 py-0.5 rounded-full">{submissions.length}개</span>
+      </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
         {submissions.map(s => (
           <ShowcaseCard key={s.id} submission={s} hackathonTitle={hackathonTitle} />

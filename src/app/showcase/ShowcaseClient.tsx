@@ -153,7 +153,7 @@ export function ShowcaseClient({ allHackathons, rankMap, overviewMap }: Props) {
   return (
     <>
       {/* 탭 */}
-      <div className="flex border-b-2 border-gray-200 mb-8 overflow-x-auto">
+      <div className="flex border-b-2 border-gray-200 mb-8 overflow-x-auto overflow-y-hidden">
         {(['해커톤', '개인 프로젝트'] as TabKey[]).map(key => (
           <button key={key} onClick={() => setTab(key)}
             className={`px-5 py-3 text-sm font-medium border-b-2 -mb-0.5 whitespace-nowrap transition-all ${

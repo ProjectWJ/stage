@@ -23,7 +23,7 @@ export function ShowcaseCard({ submission, hackathonTitle, rank }: Props) {
   return (
     <div
       onClick={() => window.open(`/showcase/${id}`, '_blank')}
-      className={`bg-white border rounded-2xl p-6 shadow-sm hover:shadow-md transition-shadow flex flex-col cursor-pointer ${badge ? 'border-yellow-300' : 'border-gray-200'}`}>
+      className={`bg-white border rounded-2xl p-6 shadow-sm flex flex-col cursor-pointer transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-brand/10 hover:ring-2 hover:ring-brand/20 ${badge ? 'border-yellow-300 hover:border-yellow-400' : 'border-gray-200 hover:border-brand'}`}>
       {/* 헤더 */}
       <div className="flex flex-col gap-1 mb-3">
         <div className="flex items-start justify-between gap-2">

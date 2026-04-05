@@ -77,7 +77,7 @@ export default async function RecapPage({ params }: Props) {
         const withBreakdown = entries.filter(e => e.scoreBreakdown).slice(0, 8)
         const cap = Math.max(...withBreakdown.map(e => Math.max(e.scoreBreakdown!.participant, e.scoreBreakdown!.judge)))
         return (
-          <section className="mb-12">
+          <section className="mb-12 pt-12 border-t border-gray-100">
             <h2 className="text-xl font-extrabold tracking-tight mb-6">📊 점수 분포</h2>
             <div className="bg-white border border-gray-200 rounded-2xl shadow-sm p-6 max-w-2xl">
               <div className="space-y-4">
