@@ -4,6 +4,9 @@
 
 **[https://stage-eight-blue.vercel.app](https://stage-eight-blue.vercel.app)** · 팀 Greenery (취침전 · 윾빈)
 
+> 해커톤 출품작: [긴급 인수인계 해커톤 — 명세서만 보고 구현하라](https://daker.ai/public/hackathons/monthly-hackathon-emergency-handover-docs)
+> 시연 영상: [YouTube](https://youtu.be/A_iFyDFh9K0)
+
 ---
 
 ## 소개
