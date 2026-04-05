@@ -134,7 +134,7 @@ const SEED_SUBMISSIONS: Submission[] = [
   {
     id: 'seed-v2',
     hackathonSlug: 'monthly-vibe-coding-2026-02',
-    nickname: '육빈',
+    nickname: '윾빈',
     teamName: 'PromptPilot',
     githubUrl: 'https://github.com/example/promptpilot',
     demoUrl: 'https://promptpilot-demo.vercel.app',
@@ -149,7 +149,7 @@ const SEED_SUBMISSIONS: Submission[] = [
       '멀티 에이전트 협력 구조로 복잡한 워크플로 처리',
       '실행 이력 저장 및 재사용 가능한 워크플로 라이브러리',
     ],
-    teamIntro: '육빈(팀장): LLM 에이전트·프롬프트 엔지니어링 전문. LangChain 기반 프로덕션 에이전트 배포 경험.',
+    teamIntro: '윾빈(팀장): LLM 에이전트·프롬프트 엔지니어링 전문. LangChain 기반 프로덕션 에이전트 배포 경험.',
   },
   {
     id: 'seed-v3',

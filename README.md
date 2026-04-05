@@ -1,36 +1,65 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# STAGE — 오픈 해커톤 플랫폼
 
-## Getting Started
+> 누구나, 로그인 없이, 해커톤 결과를 한눈에 볼 수 있는 플랫폼
 
-First, run the development server:
+**[https://stage-eight-blue.vercel.app](https://stage-eight-blue.vercel.app)** · 팀 Greenery (취침전 · 윾빈)
+
+---
+
+## 소개
+
+STAGE는 오픈 해커톤의 참가 신청부터 결과물 제출, 쇼케이스 관람까지 한 곳에서 처리할 수 있는 플랫폼입니다.
+로그인 없이 닉네임만으로 참여할 수 있으며, 종료된 해커톤의 수상작과 전체 출품작을 자유롭게 둘러볼 수 있습니다.
+
+## 주요 기능
+
+- **해커톤 목록 · 상세** — 진행 중 / 예정 / 종료 상태 필터, 평가 방식 · 일정 · 상금 정보
+- **결과물 제출 폼** — 닉네임 기반 무로그인 제출, AI 요약 자동 생성
+- **Recap 페이지** — 수상팀 하이라이트 카드, 점수 분포 차트, 전체 출품작 쇼케이스
+- **전체 쇼케이스** — 해커톤별 top3 하이라이트, 출품작 상세 페이지
+- **랭킹 · 리더보드** — 해커톤별 전체 순위표
+- **팀 캠프** — 팀원 모집 현황
+
+## 기술 스택
+
+| 항목 | 값 |
+|------|-----|
+| 프레임워크 | Next.js 14 (App Router, TypeScript) |
+| 스타일링 | Tailwind CSS v4 |
+| 데이터 | 정적 JSON + localStorage |
+| 배포 | Vercel |
+
+## 시작하기
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+npm run dev   # http://localhost:3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+```bash
+npm run build  # 프로덕션 빌드
+npm run lint   # 린트 검사
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 프로젝트 구조
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```
+stage/
+├── data/            # 해커톤 · 리더보드 · 팀 JSON 데이터
+├── src/
+│   ├── app/         # Next.js App Router 페이지
+│   │   ├── hackathons/[slug]/       # 해커톤 상세 · Recap
+│   │   ├── showcase/                # 전체 쇼케이스
+│   │   ├── submit/[slug]/           # 결과물 제출 폼
+│   │   ├── rankings/                # 랭킹
+│   │   └── camp/                    # 팀 캠프
+│   ├── components/  # 공통 컴포넌트
+│   └── lib/         # 데이터 접근 · 인증 · localStorage 헬퍼
+└── public/
+```
 
-## Learn More
+## 설계 원칙
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- **마찰 없는 관람** — 쇼케이스 · Recap은 로그인 없이 누구나 접근 가능
+- **백엔드 없음** — Next.js SSG + JSON + localStorage만 사용
+- **AI 요약은 결정론적** — 제출 시 1회 생성 후 고정, 모든 조회에서 동일한 텍스트 노출

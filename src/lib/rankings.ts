@@ -7,7 +7,7 @@ export interface RankingEntry {
 
 export const RANKINGS: RankingEntry[] = [
   { rank: 1, nickname: '취침전', points: 2850, hackathonCount: 3 },
-  { rank: 2, nickname: '육빈', points: 2640, hackathonCount: 3 },
+  { rank: 2, nickname: '윾빈', points: 2640, hackathonCount: 3 },
   { rank: 3, nickname: 'vibe_coder', points: 2410, hackathonCount: 2 },
   { rank: 4, nickname: 'ml_rookie', points: 2200, hackathonCount: 2 },
   { rank: 5, nickname: 'greenery01', points: 1980, hackathonCount: 2 },
