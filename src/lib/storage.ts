@@ -57,6 +57,8 @@ const SEED_SUBMISSIONS: Submission[] = [
       'vLLM 서빙 스크립트 원클릭 배포 지원',
     ],
     teamIntro: '취침전(팀장): 모델 경량화·KD 논문 구현 전담. 딥러닝 엣지 배포 실무 2년 경력. NeurIPS 워크샵 발표 경험 보유.',
+    judgeComment: '경량화 기법을 단순 적용에 그치지 않고 태스크 특성에 맞게 조합한 점이 돋보였습니다. 추론 속도와 정확도의 균형을 실측 데이터로 명확히 제시한 완성도 높은 결과물입니다.',
+    participantComment: '처음에는 파라미터 절감 목표치를 40%로 잡았는데, 실제로 달성하면서 저희도 놀랐어요. KD 논문을 읽고 직접 구현하는 과정이 가장 보람 있었습니다.',
   },
   {
     id: 'seed-a2',
@@ -77,6 +79,8 @@ const SEED_SUBMISSIONS: Submission[] = [
       'ONNX 변환 및 TensorRT 최적화 자동화 스크립트',
     ],
     teamIntro: 'ml_rookie(팀장): MLOps·모델 최적화 전문. Kaggle Grandmaster 등급. 프루닝·양자화 연구 1년.',
+    judgeComment: '두 기법을 순차 결합하는 파이프라인 설계가 체계적이었습니다. 실험 재현성까지 고려한 자동화 스크립트가 실무 적용 가능성을 높였습니다.',
+    participantComment: '프루닝과 양자화를 각각 적용했을 때 정확도 손실이 컸는데, 순서를 바꿔가며 실험한 끝에 최적 조합을 찾았어요.',
   },
   {
     id: 'seed-a2b',
@@ -96,6 +100,8 @@ const SEED_SUBMISSIONS: Submission[] = [
       '압축률·정확도 트레이드오프 시각화 대시보드',
     ],
     teamIntro: 'neural_arch(팀장): 트랜스포머 아키텍처 연구 2년. BERT 계열 모델 최적화 논문 3편 공저.',
+    judgeComment: '트랜스포머 구조를 깊이 이해한 접근법이었습니다. 어텐션 헤드 중요도 분석 결과를 시각화해 설득력 있게 제시했습니다.',
+    participantComment: '레이어 공유를 적용했을 때 처음엔 성능이 떨어졌는데, 공유 범위를 조정하니 오히려 정규화 효과까지 얻었어요.',
   },
   {
     id: 'seed-a3',

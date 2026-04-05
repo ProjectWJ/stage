@@ -33,6 +33,7 @@ export function SubmitClient({ hackathonSlug }: Props) {
 
   const [aiSummary, setAiSummary] = useState<string | null>(null)
   const [aiGenerating, setAiGenerating] = useState(false)
+  const [regenerateUsed, setRegenerateUsed] = useState(false)
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState('')
 
@@ -86,6 +87,7 @@ export function SubmitClient({ hackathonSlug }: Props) {
 
   // ── AI 요약 생성 ──
   const handleGenerateSummary = async () => {
+    if (aiSummary) setRegenerateUsed(true)
     setAiGenerating(true)
     setAiSummary(null)
     try {
@@ -253,14 +255,14 @@ export function SubmitClient({ hackathonSlug }: Props) {
             <button
               type="button"
               onClick={handleGenerateSummary}
-              disabled={!description.trim() || aiGenerating}
+              disabled={!description.trim() || aiGenerating || regenerateUsed}
               className="text-sm font-semibold text-brand border border-brand/30 px-4 py-2 rounded-lg hover:bg-brand-light transition-colors disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-2 whitespace-nowrap">
               {aiGenerating ? (
                 <>
                   <span className="w-3.5 h-3.5 border-2 border-brand/30 border-t-brand rounded-full animate-spin" />
                   생성 중…
                 </>
-              ) : aiSummary ? '재생성' : '요약 생성'}
+              ) : regenerateUsed ? '재생성 완료' : aiSummary ? '재생성' : '요약 생성'}
             </button>
           </div>
           {aiSummary && (

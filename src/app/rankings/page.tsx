@@ -7,9 +7,20 @@ import { RankingsClient } from './RankingsClient'
 export const metadata: Metadata = { title: '랭킹' }
 
 export default function RankingsPage() {
+  const hackathons = getHackathons()
   const leaderboards = getAllLeaderboards()
+
+  // leaderboard 데이터가 없는 ongoing 해커톤도 팀별 탭에 노출
+  const lbSlugs = new Set(leaderboards.map(lb => lb.hackathonSlug))
+  const allLeaderboards = [
+    ...leaderboards,
+    ...hackathons
+      .filter(h => h.status === 'ongoing' && !lbSlugs.has(h.slug))
+      .map(h => ({ hackathonSlug: h.slug, updatedAt: '', entries: [] as typeof leaderboards[0]['entries'] })),
+  ]
+
   const lbSections = Object.fromEntries(
-    leaderboards.map(lb => [lb.hackathonSlug, getHackathonDetail(lb.hackathonSlug)?.leaderboard ?? null])
+    allLeaderboards.map(lb => [lb.hackathonSlug, getHackathonDetail(lb.hackathonSlug)?.leaderboard ?? null])
   )
 
   return (
@@ -19,7 +30,7 @@ export default function RankingsPage() {
         <p className="text-gray-500">해커톤 참여·수위 기록 기반 글로벌 랭킹입니다.</p>
       </div>
       <Suspense>
-        <RankingsClient rankings={RANKINGS} leaderboards={leaderboards} hackathons={getHackathons()} lbSections={lbSections} />
+        <RankingsClient rankings={RANKINGS} leaderboards={allLeaderboards} hackathons={hackathons} lbSections={lbSections} />
       </Suspense>
     </div>
   )

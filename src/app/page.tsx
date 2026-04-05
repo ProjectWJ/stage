@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { getHackathons, formatKRW } from '@/lib'
+import { getHackathons, getHackathonDetail, getAllLeaderboards, formatKRW } from '@/lib'
 import { HackathonCard } from '@/components/HackathonCard'
 
 export default function HomePage() {
@@ -7,7 +7,13 @@ export default function HomePage() {
   const ongoing = hackathons.filter(h => h.status === 'ongoing')
   const upcoming = hackathons.filter(h => h.status === 'upcoming')
   const ended = hackathons.filter(h => h.status === 'ended')
-  const totalPrize = 3_000_000 + 1_500_000 + 800_000
+
+  // JSON 기반 동적 통계
+  const totalPrize = hackathons.reduce((sum, h) => {
+    const detail = getHackathonDetail(h.slug)
+    return sum + (detail?.prize?.items.reduce((s, p) => s + p.amountKRW, 0) ?? 0)
+  }, 0)
+  const teamCount = getAllLeaderboards().reduce((sum, lb) => sum + lb.entries.length, 0)
 
   return (
     <>
@@ -17,27 +23,45 @@ export default function HomePage() {
           <span className="inline-flex items-center gap-1.5 bg-brand-light text-brand border border-brand/20 text-xs font-semibold px-3.5 py-1.5 rounded-full mb-6">
             오픈 해커톤 플랫폼
           </span>
-          <h1 className="text-5xl font-extrabold tracking-tight leading-tight mb-5">
+          <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tight leading-tight mb-5">
             누구나, <span className="text-brand">로그인 없이</span>,<br />
             해커톤 결과를 <span className="text-brand">한눈에</span>.
           </h1>
-          <p className="text-gray-500 text-lg max-w-md mx-auto leading-relaxed mb-10">
+          <p className="text-gray-500 text-base sm:text-lg max-w-md mx-auto leading-relaxed mb-10">
             해커톤 플랫폼 본연의 역할 —<br />결과를 보여주는 것 — 에 집중합니다.
           </p>
 
-          <div className="inline-flex border border-gray-200 rounded-xl bg-white shadow-sm overflow-hidden">
-            {[
+          {/* 통계 — 모바일 2×2 그리드 / 데스크탑 가로 바 */}
+          {(() => {
+            const stats = [
               { val: hackathons.length, label: '전체 해커톤' },
               { val: ongoing.length, label: '진행 중', color: 'text-green-600' },
-              { val: hackathons.reduce((s, h) => s + (h.slug === 'daker-handover-2026-03' ? 2 : h.slug === 'aimers-8-model-lite' ? 2 : 1), 0), label: '참가 팀', color: 'text-brand' },
-              { val: formatKRW(totalPrize), label: '총 상금' },
-            ].map(({ val, label, color = '' }, i, arr) => (
-              <div key={label} className={`px-8 py-5 text-center ${i < arr.length - 1 ? 'border-r border-gray-200' : ''}`}>
-                <p className={`text-2xl font-extrabold leading-none ${color}`}>{val}</p>
-                <p className="text-xs text-gray-400 font-medium mt-1">{label}</p>
-              </div>
-            ))}
-          </div>
+              { val: teamCount, label: '참가 팀', color: 'text-brand' },
+              { val: totalPrize > 0 ? formatKRW(totalPrize) : '—', label: '총 상금' },
+            ]
+            return (
+              <>
+                {/* 모바일 */}
+                <div className="grid grid-cols-2 gap-2.5 sm:hidden mb-6">
+                  {stats.map(({ val, label, color = '' }) => (
+                    <div key={label} className="bg-white border border-gray-200 rounded-xl px-4 py-4 text-center shadow-sm">
+                      <p className={`text-2xl font-extrabold leading-none ${color}`}>{val}</p>
+                      <p className="text-xs text-gray-400 font-medium mt-1.5">{label}</p>
+                    </div>
+                  ))}
+                </div>
+                {/* 데스크탑 */}
+                <div className="hidden sm:inline-flex border border-gray-200 rounded-xl bg-white shadow-sm overflow-hidden mb-0">
+                  {stats.map(({ val, label, color = '' }, i, arr) => (
+                    <div key={label} className={`px-8 py-5 text-center ${i < arr.length - 1 ? 'border-r border-gray-200' : ''}`}>
+                      <p className={`text-2xl font-extrabold leading-none ${color}`}>{val}</p>
+                      <p className="text-xs text-gray-400 font-medium mt-1">{label}</p>
+                    </div>
+                  ))}
+                </div>
+              </>
+            )
+          })()}
 
           <div className="flex flex-wrap justify-center gap-3 mt-6">
             <Link href="/hackathons"

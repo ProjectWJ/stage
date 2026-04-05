@@ -1,10 +1,11 @@
 'use client'
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect, startTransition } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
 import type { RankingEntry } from '@/lib/rankings'
-import type { LeaderboardData, Hackathon, HackathonSections } from '@/types'
+import type { LeaderboardData, LeaderboardEntry, Hackathon, HackathonSections } from '@/types'
 import { formatDate } from '@/lib'
+import { getAllSubmissions } from '@/lib/storage'
 
 type Period = '7d' | '30d' | 'all'
 type MainTab = '개인별' | '팀별'
@@ -36,11 +37,20 @@ export function RankingsClient({
   const router = useRouter()
   const [isOpen, setIsOpen] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
+  const [showScoreOrder, setShowScoreOrder] = useState(false)
+  const [localEntries, setLocalEntries] = useState<LeaderboardEntry[]>([])
   const containerRef = useRef<HTMLDivElement>(null)
 
   const tab = (searchParams.get('tab') as MainTab | null) ?? '개인별'
   const period = (searchParams.get('period') as Period | null) ?? 'all'
-  const selectedSlug = searchParams.get('slug') ?? leaderboards[0]?.hackathonSlug ?? ''
+
+  // upcoming 해커톤은 팀별 탭에서 제외
+  const visibleLeaderboards = leaderboards.filter(lb => {
+    const h = hackathons.find(x => x.slug === lb.hackathonSlug)
+    return h?.status === 'ended' || h?.status === 'ongoing'
+  })
+
+  const selectedSlug = searchParams.get('slug') ?? visibleLeaderboards[0]?.hackathonSlug ?? ''
 
   function updateParams(updates: Record<string, string>) {
     const p = new URLSearchParams(searchParams.toString())
@@ -49,27 +59,57 @@ export function RankingsClient({
   }
 
   useEffect(() => {
-    const handler = (e: MouseEvent) => {
+    const handler = (e: PointerEvent) => {
       if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
         setIsOpen(false)
         setSearchQuery('')
       }
     }
-    document.addEventListener('mousedown', handler)
-    return () => document.removeEventListener('mousedown', handler)
+    document.addEventListener('pointerdown', handler)
+    return () => document.removeEventListener('pointerdown', handler)
   }, [])
 
-  const activeLeaderboard = leaderboards.find(l => l.hackathonSlug === selectedSlug)
+  const activeLeaderboard = visibleLeaderboards.find(l => l.hackathonSlug === selectedSlug)
   const activeSections = lbSections[selectedSlug] ?? null
-  const hasBreakdown = activeLeaderboard?.entries.some(e => e.scoreBreakdown) ?? false
+  const selectedHackathon = hackathons.find(x => x.slug === selectedSlug)
+  const isOngoing = selectedHackathon?.status === 'ongoing'
+
+  // ongoing 해커톤: localStorage 제출물을 제출 시각 순으로 로드
+  useEffect(() => {
+    if (!isOngoing) { startTransition(() => setLocalEntries([])); return }
+    try {
+      const entries = getAllSubmissions()
+        .filter(s => s.hackathonSlug === selectedSlug)
+        .sort((a, b) => new Date(a.submittedAt).getTime() - new Date(b.submittedAt).getTime())
+        .map((s, i): LeaderboardEntry => ({
+          rank: i + 1,
+          teamName: s.teamName,
+          score: 0,
+          submittedAt: s.submittedAt,
+        }))
+      startTransition(() => setLocalEntries(entries))
+    } catch { startTransition(() => setLocalEntries([])) }
+  }, [selectedSlug, isOngoing])
+
+  // 진행 중 해커톤: 기본은 제출 시각 순(localStorage), 토글 ON 시 leaderboard 점수 순
+  const displayedEntries = (() => {
+    if (!isOngoing) return activeLeaderboard?.entries ?? []
+    const lbEntries = activeLeaderboard?.entries ?? []
+    if (showScoreOrder && lbEntries.length > 0) return lbEntries
+    return localEntries
+  })()
+
+  const hasBreakdown = (isOngoing && !showScoreOrder)
+    ? false
+    : (activeLeaderboard?.entries.some(e => e.scoreBreakdown) ?? false)
   const hasArtifacts = activeLeaderboard?.entries.some(e => e.artifacts) ?? false
 
   const filteredLeaderboards = searchQuery
-    ? leaderboards.filter(lb => {
+    ? visibleLeaderboards.filter(lb => {
         const h = hackathons.find(x => x.slug === lb.hackathonSlug)
         return (h?.title ?? lb.hackathonSlug).toLowerCase().includes(searchQuery.toLowerCase())
       })
-    : leaderboards
+    : visibleLeaderboards
 
   const selectedTitle = hackathons.find(x => x.slug === selectedSlug)?.title ?? selectedSlug
 
@@ -101,6 +141,7 @@ export function RankingsClient({
             ))}
           </div>
           <div className="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm">
+            <div className="overflow-x-auto">
             <table className="w-full border-collapse">
               <thead>
                 <tr className="bg-gray-50 text-left">
@@ -130,6 +171,7 @@ export function RankingsClient({
                 ))}
               </tbody>
             </table>
+            </div>
           </div>
         </>
       ) : (
@@ -155,7 +197,7 @@ export function RankingsClient({
                       const title = h?.title ?? lb.hackathonSlug
                       return (
                         <button key={lb.hackathonSlug}
-                          onMouseDown={() => { updateParams({ slug: lb.hackathonSlug }); setIsOpen(false); setSearchQuery('') }}
+                          onPointerDown={() => { updateParams({ slug: lb.hackathonSlug }); setIsOpen(false); setSearchQuery('') }}
                           className={`w-full text-left px-4 py-2.5 text-sm transition-colors ${
                             lb.hackathonSlug === selectedSlug
                               ? 'text-brand font-semibold bg-brand-light'
@@ -178,32 +220,57 @@ export function RankingsClient({
           {activeLeaderboard && (
             <>
               <div className="flex flex-wrap items-start justify-between gap-2 mb-4">
-                <p className="text-xs text-gray-400 font-mono">최종 업데이트: {formatDate(activeLeaderboard.updatedAt)}</p>
-                {activeSections?.note && (
-                  <p className="text-xs text-gray-400 italic">{activeSections.note}</p>
-                )}
+                <div className="flex flex-wrap items-center gap-3">
+                  {activeLeaderboard.updatedAt && (
+                    <p className="text-xs text-gray-400 font-mono">최종 업데이트: {formatDate(activeLeaderboard.updatedAt)}</p>
+                  )}
+                  {isOngoing && (
+                    <span className="text-xs font-semibold text-amber-700 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded-full">
+                      진행 중 — 제출 시각 순
+                    </span>
+                  )}
+                </div>
+                <div className="flex items-center gap-2">
+                  {activeSections?.note && (
+                    <p className="text-xs text-gray-400 italic">{activeSections.note}</p>
+                  )}
+                  {isOngoing && (
+                    <button
+                      onClick={() => setShowScoreOrder(v => !v)}
+                      className={`text-xs font-mono font-semibold px-3 py-1 rounded-md border transition-colors ${
+                        showScoreOrder
+                          ? 'bg-red-50 text-red-600 border-red-200 hover:bg-red-100'
+                          : 'bg-gray-50 text-gray-500 border-gray-200 hover:bg-gray-100'
+                      }`}>
+                      🔧 {showScoreOrder ? '점수순 ON' : '점수순 OFF'}
+                    </button>
+                  )}
+                </div>
               </div>
 
-              {activeLeaderboard.entries.length === 0 ? (
+              {displayedEntries.length === 0 ? (
                 <div className="text-center py-16 text-gray-400">
                   <div className="text-4xl mb-3">📋</div>
                   <p>등록된 순위가 없습니다.</p>
                 </div>
               ) : (
                 <div className="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm">
+                  <div className="overflow-x-auto">
                   <table className="w-full border-collapse">
                     <thead>
                       <tr className="bg-gray-50 text-left">
                         <th className="text-xs font-semibold text-gray-400 uppercase tracking-wide px-5 py-3 w-16">순위</th>
                         <th className="text-xs font-semibold text-gray-400 uppercase tracking-wide px-5 py-3">팀명</th>
-                        <th className="text-xs font-semibold text-gray-400 uppercase tracking-wide px-5 py-3">점수</th>
+                        {(!isOngoing || showScoreOrder) && (
+                          <th className="text-xs font-semibold text-gray-400 uppercase tracking-wide px-5 py-3">점수</th>
+                        )}
                         {hasBreakdown && <th className="text-xs font-semibold text-gray-400 uppercase tracking-wide px-5 py-3 hidden md:table-cell">참가자 / 심사위원</th>}
                         <th className="text-xs font-semibold text-gray-400 uppercase tracking-wide px-5 py-3 hidden sm:table-cell">제출 시각</th>
                         {hasArtifacts && <th className="text-xs font-semibold text-gray-400 uppercase tracking-wide px-5 py-3 hidden md:table-cell">제출물</th>}
                       </tr>
                     </thead>
                     <tbody>
-                      {activeLeaderboard.entries.map(e => (
+                      {displayedEntries.map(e => (
                         <tr key={e.rank} className={`border-t border-gray-100 hover:bg-gray-50 transition-colors ${e.rank <= 3 ? 'bg-gradient-to-r from-indigo-50/30 to-transparent' : ''}`}>
                           <td className="px-5 py-4">
                             <span className={`w-9 h-9 rounded-xl inline-flex items-center justify-center font-extrabold text-sm ${RANK_STYLES[e.rank] ?? 'bg-gray-100 text-gray-400 text-xs'}`}>
@@ -211,14 +278,16 @@ export function RankingsClient({
                             </span>
                           </td>
                           <td className="px-5 py-4 font-bold text-sm">{e.teamName}</td>
-                          <td className="px-5 py-4">
-                            <span className="font-mono font-medium text-base">{e.score}</span>
-                            {e.scoreBreakdown && (
-                              <p className="text-xs text-gray-400 font-mono mt-0.5 md:hidden">
-                                참가자 {e.scoreBreakdown.participant} / 심사위원 {e.scoreBreakdown.judge}
-                              </p>
-                            )}
-                          </td>
+                          {(!isOngoing || showScoreOrder) && (
+                            <td className="px-5 py-4">
+                              <span className="font-mono font-medium text-base">{e.score}</span>
+                              {e.scoreBreakdown && (
+                                <p className="text-xs text-gray-400 font-mono mt-0.5 md:hidden">
+                                  참가자 {e.scoreBreakdown.participant} / 심사위원 {e.scoreBreakdown.judge}
+                                </p>
+                              )}
+                            </td>
+                          )}
                           {hasBreakdown && (
                             <td className="px-5 py-4 hidden md:table-cell">
                               {e.scoreBreakdown
@@ -251,6 +320,7 @@ export function RankingsClient({
                       ))}
                     </tbody>
                   </table>
+                  </div>
                 </div>
               )}
             </>

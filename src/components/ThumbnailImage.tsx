@@ -1,5 +1,5 @@
 'use client'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, startTransition } from 'react'
 
 // slug를 시드로 그라디언트 선택 — 결정론적, inline style 사용 (Tailwind 동적 클래스 스캔 누락 방지)
 const GRADIENTS = [
@@ -27,7 +27,7 @@ export function ThumbnailImage({ src, alt, slug }: Props) {
   const [failed, setFailed] = useState(false)
   const gradientStyle = { background: pickGradient(slug) }
 
-  useEffect(() => { setMounted(true) }, [])
+  useEffect(() => { startTransition(() => setMounted(true)) }, [])
 
   // SSR 및 hydration: 항상 gradient div → img가 HTML에 박히지 않음
   if (!mounted || failed) {

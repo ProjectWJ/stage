@@ -109,4 +109,7 @@ export interface Submission {
   problemStatement?: string
   features?: string[]
   teamIntro?: string
+  // Recap 수상 코멘트
+  judgeComment?: string
+  participantComment?: string
 }

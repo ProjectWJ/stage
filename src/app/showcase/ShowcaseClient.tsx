@@ -1,5 +1,5 @@
 'use client'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, startTransition } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import type { Hackathon, Submission } from '@/types'
 import { getAllSubmissions } from '@/lib/storage'
@@ -39,9 +39,13 @@ export function ShowcaseClient({ allHackathons, rankMap, overviewMap }: Props) {
 
   useEffect(() => {
     try {
-      setSubmissions(getAllSubmissions())
-    } finally {
-      setMounted(true)
+      const subs = getAllSubmissions()
+      startTransition(() => {
+        setSubmissions(subs)
+        setMounted(true)
+      })
+    } catch {
+      startTransition(() => setMounted(true))
     }
   }, [])
 
@@ -139,7 +143,7 @@ export function ShowcaseClient({ allHackathons, rankMap, overviewMap }: Props) {
   return (
     <>
       {/* 탭 */}
-      <div className="flex border-b-2 border-gray-200 mb-8">
+      <div className="flex border-b-2 border-gray-200 mb-8 overflow-x-auto">
         {(['해커톤', '개인 프로젝트'] as TabKey[]).map(key => (
           <button key={key} onClick={() => setTab(key)}
             className={`px-5 py-3 text-sm font-medium border-b-2 -mb-0.5 whitespace-nowrap transition-all ${

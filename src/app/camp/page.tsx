@@ -1,7 +1,7 @@
 import { Suspense } from 'react'
 import type { Metadata } from 'next'
 import { getTeams, getHackathons } from '@/lib'
-import { TeamsClient } from '../teams/TeamsClient'
+import { TeamsClient } from './TeamsClient'
 
 export const metadata: Metadata = { title: '캠프 — 팀 모집' }
 

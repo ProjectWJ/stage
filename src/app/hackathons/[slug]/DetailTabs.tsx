@@ -7,6 +7,7 @@ import { formatDate, getMilestoneStatus, formatKRW, getTzAbbr } from '@/lib'
 import { EmptyState } from '@/components/EmptyState'
 import { ShowcaseCard } from '@/components/ShowcaseCard'
 import { getAllSubmissions } from '@/lib/storage'
+import { getUser } from '@/lib/auth'
 
 type TabKey = 'overview' | 'teams' | 'eval' | 'prize' | 'info' | 'schedule' | 'submit' | 'leaderboard' | 'showcase'
 
@@ -48,6 +49,7 @@ export function DetailTabs({ hackathon, sections, leaderboard, teams }: Props) {
   const router = useRouter()
   const [submissions, setSubmissions] = useState<Submission[]>([])
   const [submissionsLoaded, setSubmissionsLoaded] = useState(false)
+  const [mySubmission, setMySubmission] = useState<Submission | null | undefined>(undefined) // undefined=미확인
 
   const tabList = hackathon.status === 'ended'
     ? [...BASE_TABS, { key: 'showcase' as TabKey, label: '쇼케이스' }]
@@ -63,6 +65,20 @@ export function DetailTabs({ hackathon, sections, leaderboard, teams }: Props) {
       setSubmissions(getAllSubmissions().filter(s => s.hackathonSlug === hackathon.slug))
     } finally {
       setSubmissionsLoaded(true)
+    }
+  }, [hackathon.slug, hackathon.status])
+
+  useEffect(() => {
+    if (hackathon.status !== 'ongoing') { setMySubmission(null); return }
+    try {
+      const user = getUser()
+      if (!user) { setMySubmission(null); return }
+      const found = getAllSubmissions().find(
+        s => s.hackathonSlug === hackathon.slug && s.nickname === user.nickname
+      )
+      setMySubmission(found ?? null)
+    } catch {
+      setMySubmission(null)
     }
   }, [hackathon.slug, hackathon.status])
 
@@ -332,14 +348,26 @@ export function DetailTabs({ hackathon, sections, leaderboard, teams }: Props) {
                     ))}
                   </ul>
                 </InfoCard>
-                <div className="flex justify-start">
+                <div className="flex flex-col gap-2">
                   {hackathon.status === 'ongoing' ? (
-                    <Link href={`/submit/${hackathon.slug}`}
-                      className="inline-flex items-center bg-brand text-white font-semibold text-sm px-4 py-2 rounded-lg hover:bg-brand-dark transition-colors no-underline">
-                      제출하기 →
-                    </Link>
+                    mySubmission ? (
+                      <div className="bg-green-50 border border-green-200 rounded-xl px-5 py-4 flex items-start gap-3">
+                        <span className="text-xl flex-shrink-0">✅</span>
+                        <div>
+                          <p className="text-sm font-bold text-green-800">이미 제출하셨습니다.</p>
+                          <p className="text-xs text-green-700 mt-0.5">
+                            팀명: <span className="font-semibold">{mySubmission.teamName}</span>
+                          </p>
+                        </div>
+                      </div>
+                    ) : (
+                      <Link href={`/submit/${hackathon.slug}`}
+                        className="inline-flex items-center self-start bg-brand text-white font-semibold text-sm px-4 py-2 rounded-lg hover:bg-brand-dark transition-colors no-underline">
+                        제출하기 →
+                      </Link>
+                    )
                   ) : (
-                    <span className="inline-flex items-center text-sm font-semibold text-gray-300 bg-gray-100 border border-gray-200 px-4 py-2 rounded-lg cursor-not-allowed">
+                    <span className="inline-flex items-center self-start text-sm font-semibold text-gray-300 bg-gray-100 border border-gray-200 px-4 py-2 rounded-lg cursor-not-allowed">
                       제출하기 →
                     </span>
                   )}

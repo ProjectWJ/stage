@@ -1,8 +1,8 @@
 'use client'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, startTransition } from 'react'
 import Link from 'next/link'
 import { getAllSubmissions } from '@/lib/storage'
-import { getAllLeaderboards, formatDate } from '@/lib'
+import { getAllLeaderboards, getHackathons, formatDate } from '@/lib'
 import { AISummaryBox } from '@/components/AISummaryBox'
 import type { Submission } from '@/types'
 
@@ -31,10 +31,14 @@ export function SubmissionDetailClient({ id }: Props) {
   useEffect(() => {
     try {
       const all = getAllSubmissions()
-      setSubmission(all.find(s => s.id === id) ?? null)
-      setRankMap(buildRankMap())
+      const found = all.find(s => s.id === id) ?? null
+      const ranks = buildRankMap()
+      startTransition(() => {
+        setSubmission(found)
+        setRankMap(ranks)
+      })
     } catch {
-      setSubmission(null)
+      startTransition(() => setSubmission(null))
     }
   }, [id])
 
@@ -70,6 +74,9 @@ export function SubmissionDetailClient({ id }: Props) {
   const rank = rankMap[`${hackathonSlug}::${teamName}`]
   const badge = rank ? RANK_BADGE[rank] : null
   const dateStr = formatDate(submittedAt)
+  const hackathonTitle = hackathonSlug
+    ? (getHackathons().find(h => h.slug === hackathonSlug)?.title ?? hackathonSlug)
+    : '개인 프로젝트'
 
   return (
     <article>
@@ -81,12 +88,16 @@ export function SubmissionDetailClient({ id }: Props) {
       {/* 헤더 */}
       <div className="mb-8">
         <div className="flex flex-wrap items-center gap-2 mb-3">
-          {hackathonSlug && (
+          {hackathonSlug ? (
             <Link
               href={`/hackathons/${hackathonSlug}`}
               className="text-xs font-semibold text-brand bg-brand-light border border-brand/20 px-2.5 py-0.5 rounded-md no-underline hover:bg-brand/10 transition-colors">
-              {hackathonSlug}
+              {hackathonTitle}
             </Link>
+          ) : (
+            <span className="text-xs font-semibold text-gray-500 bg-gray-100 border border-gray-200 px-2.5 py-0.5 rounded-md">
+              개인 프로젝트
+            </span>
           )}
           {badge && (
             <span className={`text-xs font-bold px-2.5 py-0.5 rounded-full border ${badge.className}`}>
