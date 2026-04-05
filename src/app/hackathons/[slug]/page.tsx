@@ -55,10 +55,14 @@ export default async function HackathonDetailPage({ params }: Props) {
           <p className="text-gray-600 text-base leading-relaxed max-w-2xl">{sections.overview.summary}</p>
         )}
         {hackathon.status === 'ended' && (
-          <div className="flex gap-3 mt-6">
+          <div className="mt-6 bg-brand-light border border-brand/20 rounded-xl px-5 py-4 flex flex-wrap items-center justify-between gap-4">
+            <div>
+              <p className="text-sm font-semibold text-brand">해커톤이 모두 종료되었습니다.</p>
+              <p className="text-xs text-gray-500 mt-0.5">참가자들의 출품작을 관람해보세요!</p>
+            </div>
             <Link href={`/hackathons/${hackathon.slug}/recap`}
-              className="bg-white text-brand font-semibold text-sm px-5 py-2.5 rounded-lg border border-brand/30 hover:bg-brand-light transition-colors no-underline">
-              결과 보기 →
+              className="bg-brand text-white font-semibold text-sm px-5 py-2.5 rounded-lg hover:bg-brand-dark transition-colors no-underline whitespace-nowrap">
+              쇼케이스 보기 →
             </Link>
           </div>
         )}

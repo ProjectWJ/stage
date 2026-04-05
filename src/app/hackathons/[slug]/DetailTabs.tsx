@@ -5,11 +5,10 @@ import Link from 'next/link'
 import type { Hackathon, HackathonSections, LeaderboardData, Team, Submission } from '@/types'
 import { formatDate, getMilestoneStatus, formatKRW, getTzAbbr } from '@/lib'
 import { EmptyState } from '@/components/EmptyState'
-import { ShowcaseCard } from '@/components/ShowcaseCard'
 import { getAllSubmissions } from '@/lib/storage'
 import { getUser } from '@/lib/auth'
 
-type TabKey = 'overview' | 'teams' | 'eval' | 'prize' | 'info' | 'schedule' | 'submit' | 'leaderboard' | 'showcase'
+type TabKey = 'overview' | 'teams' | 'eval' | 'prize' | 'info' | 'schedule' | 'submit' | 'leaderboard'
 
 const BASE_TABS: { key: TabKey; label: string }[] = [
   { key: 'overview', label: '개요' },
@@ -47,26 +46,13 @@ function InfoCard({ title, children }: { title: string; children: React.ReactNod
 export function DetailTabs({ hackathon, sections, leaderboard, teams }: Props) {
   const searchParams = useSearchParams()
   const router = useRouter()
-  const [submissions, setSubmissions] = useState<Submission[]>([])
-  const [submissionsLoaded, setSubmissionsLoaded] = useState(false)
   const [mySubmission, setMySubmission] = useState<Submission | null | undefined>(undefined) // undefined=미확인
 
-  const tabList = hackathon.status === 'ended'
-    ? [...BASE_TABS, { key: 'showcase' as TabKey, label: '쇼케이스' }]
-    : BASE_TABS
+  const tabList = BASE_TABS
 
   const tabParam = searchParams.get('tab') as TabKey | null
   const active: TabKey = tabParam && tabList.some(t => t.key === tabParam) ? tabParam : 'overview'
   const top = leaderboard?.entries[0]
-
-  useEffect(() => {
-    if (hackathon.status !== 'ended') return
-    try {
-      setSubmissions(getAllSubmissions().filter(s => s.hackathonSlug === hackathon.slug))
-    } finally {
-      setSubmissionsLoaded(true)
-    }
-  }, [hackathon.slug, hackathon.status])
 
   useEffect(() => {
     if (hackathon.status !== 'ongoing') { setMySubmission(null); return }
@@ -88,11 +74,6 @@ export function DetailTabs({ hackathon, sections, leaderboard, teams }: Props) {
     router.replace(`?${p.toString()}`, { scroll: false })
   }
 
-  const rankMap: Record<string, 1 | 2 | 3> = {}
-  leaderboard?.entries.forEach(e => {
-    if (e.rank <= 3) rankMap[`${hackathon.slug}::${e.teamName}`] = e.rank as 1 | 2 | 3
-  })
-
   return (
     <div>
       {/* Tab bar */}
@@ -109,7 +90,7 @@ export function DetailTabs({ hackathon, sections, leaderboard, teams }: Props) {
         ))}
       </div>
 
-      <div className={`grid grid-cols-1 gap-6 ${active !== 'showcase' ? 'lg:grid-cols-[1fr_280px]' : ''}`}>
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-[1fr_280px]">
         {/* Main content */}
         <div>
           {/* 개요 */}
@@ -460,39 +441,9 @@ export function DetailTabs({ hackathon, sections, leaderboard, teams }: Props) {
             )
           )}
 
-          {/* 쇼케이스 */}
-          {active === 'showcase' && (
-            !submissionsLoaded ? (
-              <div className="animate-pulse grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-                {Array(3).fill(0).map((_, i) => (
-                  <div key={i} className="bg-white border border-gray-100 rounded-2xl overflow-hidden">
-                    <div className="w-full aspect-video bg-gray-200" />
-                    <div className="p-4 space-y-2">
-                      <div className="h-4 bg-gray-200 rounded w-3/4" />
-                      <div className="h-3 bg-gray-100 rounded w-full" />
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : submissions.length === 0 ? (
-              <EmptyState icon="🎨" message="아직 제출된 솔루션이 없습니다." />
-            ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-                {submissions.map(s => (
-                  <ShowcaseCard
-                    key={s.id}
-                    submission={s}
-                    hackathonTitle={hackathon.title}
-                    rank={rankMap[`${hackathon.slug}::${s.teamName}`]}
-                  />
-                ))}
-              </div>
-            )
-          )}
         </div>
 
-        {/* Sidebar — 쇼케이스 탭에서는 숨김 */}
-        {active !== 'showcase' && <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-4">
           {sections?.prize && (
             <InfoCard title="🏆 시상 내역">
               {sections.prize.items.map((p, i) => {
@@ -547,7 +498,7 @@ export function DetailTabs({ hackathon, sections, leaderboard, teams }: Props) {
               </div>
             </InfoCard>
           )}
-        </div>}
+        </div>
       </div>
     </div>
   )

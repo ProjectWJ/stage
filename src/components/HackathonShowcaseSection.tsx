@@ -111,7 +111,7 @@ export function HackathonShowcaseSection({ hackathon, overview, submissions, ran
               </div>
               <div className="mt-4 flex justify-end">
                 <Link
-                  href={`/hackathons/${hackathon.slug}?tab=showcase`}
+                  href={`/hackathons/${hackathon.slug}/recap`}
                   className="text-sm font-semibold text-gray-500 border border-gray-200 px-4 py-2 rounded-lg hover:bg-gray-50 transition-colors no-underline">
                   전체 쇼케이스 보기 →
                 </Link>

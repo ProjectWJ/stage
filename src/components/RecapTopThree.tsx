@@ -63,9 +63,9 @@ export function RecapTopThree({ entries, hackathonSlug, hackathonTitle }: Props)
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-xl font-extrabold tracking-tight">수상팀 하이라이트</h2>
         <Link
-          href={`/showcase?scroll=${hackathonSlug}`}
+          href={`/hackathons/${hackathonSlug}?tab=leaderboard`}
           className="text-sm font-semibold text-brand border border-brand/30 px-4 py-2 rounded-lg hover:bg-brand-light transition-colors no-underline whitespace-nowrap">
-          전체 쇼케이스 보기 →
+          순위 확인하기 →
         </Link>
       </div>
 
