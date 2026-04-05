@@ -5,6 +5,7 @@ import type { Hackathon, Submission } from '@/types'
 import { formatDate } from '@/lib'
 import { StatusBadge } from './StatusBadge'
 import { ShowcaseCard } from './ShowcaseCard'
+import { ShowcaseHighlightCard } from './ShowcaseHighlightCard'
 
 const GRADIENTS = [
   'linear-gradient(135deg, #60a5fa, #4f46e5)',
@@ -94,18 +95,45 @@ export function HackathonShowcaseSection({ hackathon, overview, submissions, ran
             <p className="text-xs text-gray-400 mt-4">제출물이 없습니다.</p>
           )}
         </div>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-          {sorted.map(s => (
-            <ShowcaseCard
-              key={s.id}
-              submission={s}
-              hackathonTitle={hackathon.title}
-              rank={rankMap[`${s.hackathonSlug}::${s.teamName}`]}
-            />
-          ))}
-        </div>
-      )}
+      ) : (() => {
+        // ended 해커톤 — rankMap에 있는 top3만 하이라이트 카드로 표시
+        const top3 = ([1, 2, 3] as const)
+          .map(r => ({ rank: r, sub: sorted.find(s => rankMap[`${s.hackathonSlug}::${s.teamName}`] === r) }))
+          .filter((x): x is { rank: 1 | 2 | 3; sub: Submission } => x.sub !== undefined)
+
+        if (top3.length > 0) {
+          return (
+            <>
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
+                {top3.map(({ rank, sub }) => (
+                  <ShowcaseHighlightCard key={sub.id} submission={sub} rank={rank} />
+                ))}
+              </div>
+              <div className="mt-4 flex justify-end">
+                <Link
+                  href={`/hackathons/${hackathon.slug}?tab=showcase`}
+                  className="text-sm font-semibold text-gray-500 border border-gray-200 px-4 py-2 rounded-lg hover:bg-gray-50 transition-colors no-underline">
+                  전체 쇼케이스 보기 →
+                </Link>
+              </div>
+            </>
+          )
+        }
+
+        // rankMap 없으면 일반 그리드 폴백
+        return (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+            {sorted.map(s => (
+              <ShowcaseCard
+                key={s.id}
+                submission={s}
+                hackathonTitle={hackathon.title}
+                rank={rankMap[`${s.hackathonSlug}::${s.teamName}`]}
+              />
+            ))}
+          </div>
+        )
+      })()}
     </section>
   )
 }

@@ -86,8 +86,18 @@ export function ShowcaseClient({ allHackathons, rankMap, overviewMap }: Props) {
   const lowerQuery = query.trim().toLowerCase()
 
   // 해커톤 탭: 검색 필터 적용한 섹션 목록
+  // upcoming은 제출물 없어도 섹션 표시 (잠금 UI로 렌더됨)
   const hackathonSections = sortedHackathons.map(h => {
     const hacSubs = submissions.filter(s => s.hackathonSlug === h.slug)
+
+    // upcoming: 항상 포함 (빈 배열 그대로)
+    if (h.status === 'upcoming') {
+      if (!lowerQuery || h.title.toLowerCase().includes(lowerQuery)) {
+        return { hackathon: h, submissions: hacSubs }
+      }
+      return null
+    }
+
     if (hacSubs.length === 0) return null
 
     if (!lowerQuery) return { hackathon: h, submissions: hacSubs }
@@ -104,9 +114,9 @@ export function ShowcaseClient({ allHackathons, rankMap, overviewMap }: Props) {
     return { hackathon: h, submissions: matched }
   }).filter(Boolean) as { hackathon: Hackathon; submissions: Submission[] }[]
 
-  // 앵커 칩: 제출물 있는 해커톤만 (검색 전 기준)
+  // 앵커 칩: 제출물 있는 해커톤 + upcoming 포함
   const anchorHackathons = sortedHackathons.filter(h =>
-    submissions.some(s => s.hackathonSlug === h.slug)
+    h.status === 'upcoming' || submissions.some(s => s.hackathonSlug === h.slug)
   )
 
   // 개인 프로젝트 탭

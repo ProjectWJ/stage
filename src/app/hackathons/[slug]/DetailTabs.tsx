@@ -109,7 +109,7 @@ export function DetailTabs({ hackathon, sections, leaderboard, teams }: Props) {
         ))}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-[1fr_280px] gap-6">
+      <div className={`grid grid-cols-1 gap-6 ${active !== 'showcase' ? 'lg:grid-cols-[1fr_280px]' : ''}`}>
         {/* Main content */}
         <div>
           {/* 개요 */}
@@ -491,8 +491,8 @@ export function DetailTabs({ hackathon, sections, leaderboard, teams }: Props) {
           )}
         </div>
 
-        {/* Sidebar */}
-        <div className="flex flex-col gap-4">
+        {/* Sidebar — 쇼케이스 탭에서는 숨김 */}
+        {active !== 'showcase' && <div className="flex flex-col gap-4">
           {sections?.prize && (
             <InfoCard title="🏆 시상 내역">
               {sections.prize.items.map((p, i) => {
@@ -547,7 +547,7 @@ export function DetailTabs({ hackathon, sections, leaderboard, teams }: Props) {
               </div>
             </InfoCard>
           )}
-        </div>
+        </div>}
       </div>
     </div>
   )
