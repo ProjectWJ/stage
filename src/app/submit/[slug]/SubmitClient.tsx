@@ -8,7 +8,6 @@ import type { Submission } from '@/types'
 
 interface Props {
   hackathonSlug: string
-  hackathonTitle: string
 }
 
 export function SubmitClient({ hackathonSlug }: Props) {

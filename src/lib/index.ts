@@ -22,11 +22,6 @@ export const getHackathonDetail = (slug: string): HackathonSections | null => {
   return detailRoot.extraDetails?.find(d => d.slug === slug)?.sections ?? null
 }
 
-export const getAllDetailSlugs = (): string[] => [
-  detailRoot.slug,
-  ...(detailRoot.extraDetails?.map(d => d.slug) ?? []),
-]
-
 // ── Leaderboard ──
 const lbRoot = leaderboardRaw as LeaderboardRoot
 

@@ -38,9 +38,9 @@ export function HackathonShowcaseSection({ hackathon, overview, submissions, ran
   return (
     <section id={hackathon.slug} className="scroll-mt-20 mb-16">
       {/* 섹션 헤더 */}
-      <div className="flex items-center gap-3 mb-5">
+      <div className="flex flex-col gap-1.5 mb-5">
         <h2 className="text-xl font-bold text-gray-900">{hackathon.title}</h2>
-        <StatusBadge status={hackathon.status} />
+        <div><StatusBadge status={hackathon.status} /></div>
       </div>
 
       {/* 해커톤 정보 카드 */}
