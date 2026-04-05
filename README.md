@@ -1,11 +1,30 @@
 # STAGE — 오픈 해커톤 플랫폼
 
-> 누구나, 로그인 없이, 해커톤 결과를 한눈에 볼 수 있는 플랫폼
 
-**[https://stage-eight-blue.vercel.app](https://stage-eight-blue.vercel.app)** · 팀 Greenery (취침전 · 윾빈)
+<img width="1616" height="1037" alt="Image" src="https://github.com/user-attachments/assets/8efd65f7-fa95-484f-b6a4-c6153ed4dc66" />
 
-> 해커톤 출품작: [긴급 인수인계 해커톤 — 명세서만 보고 구현하라](https://daker.ai/public/hackathons/monthly-hackathon-emergency-handover-docs)
-> 시연 영상: [YouTube](https://youtu.be/A_iFyDFh9K0)
+
+<div align="center">
+
+<h3>누구나, 로그인 없이, 해커톤 결과를 한눈에</h3>
+
+<p>
+  <a href="https://stage-eight-blue.vercel.app"><strong>🔗 라이브 데모</strong></a>
+  &nbsp;·&nbsp;
+  <a href="https://daker.ai/public/hackathons/monthly-hackathon-emergency-handover-docs">긴급 인수인계 해커톤 출품작</a>
+</p>
+
+<p><strong>팀 Greenery</strong> — 취침전 · 윾빈</p>
+
+</div>
+
+
+## 시연 영상
+<div align="center">
+  <a href="https://youtu.be/A_iFyDFh9K0">
+    <img src="http://img.youtube.com/vi/A_iFyDFh9K0/0.jpg" alt="시연 영상" />
+  </a>
+</div>
 
 ---
 
