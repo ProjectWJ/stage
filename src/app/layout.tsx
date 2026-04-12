@@ -4,7 +4,7 @@ import { Header } from '@/components/Header'
 
 export const metadata: Metadata = {
   title: { default: 'STAGE — 오픈 해커톤 플랫폼', template: '%s | STAGE' },
-  description: '누구나, 로그인 없이, 해커톤 결과를 한눈에 볼 수 있는 플랫폼',
+  description: '해커톤의 끝은 이야기가 되어야 한다. 오픈 해커톤 플랫폼 STAGE.',
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

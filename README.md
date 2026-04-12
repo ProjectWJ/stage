@@ -6,7 +6,7 @@
 
 <div align="center">
 
-<h3>누구나, 로그인 없이, 해커톤 결과를 한눈에</h3>
+<h3>해커톤의 끝은 이야기가 되어야 한다</h3>
 
 <p>
   <a href="https://stage-eight-blue.vercel.app"><strong>🔗 라이브 데모</strong></a>

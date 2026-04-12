@@ -24,8 +24,8 @@ export default function HomePage() {
             오픈 해커톤 플랫폼
           </span>
           <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tight leading-tight mb-5">
-            누구나, <span className="text-brand">로그인 없이</span>,<br />
-            해커톤 결과를 <span className="text-brand">한눈에</span>.
+            해커톤의 끝은 <span className="text-brand">이야기</span>가<br />
+            되어야 한다.
           </h1>
           <p className="text-gray-500 text-base sm:text-lg max-w-md mx-auto leading-relaxed mb-10">
             해커톤 플랫폼 본연의 역할 —<br />결과를 보여주는 것 — 에 집중합니다.
