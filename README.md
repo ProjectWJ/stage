@@ -1,7 +1,7 @@
 # STAGE — 오픈 해커톤 플랫폼
 
 
-<img width="1616" height="1037" alt="Image" src="https://github.com/user-attachments/assets/8efd65f7-fa95-484f-b6a4-c6153ed4dc66" />
+<img width="1616" height="1037" alt="Image" src="https://github.com/user-attachments/assets/256e3c04-1b34-493e-a6e6-b4ccabe89047" />
 
 
 <div align="center">
