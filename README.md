@@ -1,7 +1,7 @@
 # STAGE — 오픈 해커톤 플랫폼
 
 
-<img width="1616" height="1037" alt="Image" src="https://github.com/user-attachments/assets/8efd65f7-fa95-484f-b6a4-c6153ed4dc66" />
+<img width="1616" height="1037" alt="Image" src="https://github.com/user-attachments/assets/256e3c04-1b34-493e-a6e6-b4ccabe89047" />
 
 
 <div align="center">
@@ -31,7 +31,7 @@
 ## 소개
 
 STAGE는 오픈 해커톤의 참가 신청부터 결과물 제출, 쇼케이스 관람까지 한 곳에서 처리할 수 있는 플랫폼입니다.
-로그인 없이 닉네임만으로 참여할 수 있으며, 종료된 해커톤의 수상작과 전체 출품작을 자유롭게 둘러볼 수 있습니다.
+종료된 해커톤의 수상작과 전체 출품작을 자유롭게 둘러볼 수 있습니다.
 
 ## 주요 기능
 
